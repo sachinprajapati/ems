@@ -23,3 +23,7 @@ def RechargeHistory(request):
 @login_required
 def RechargeList(request):
 	return render(request, 'users/recharge_list.html', {})
+
+@login_required
+def genrateBill(request):
+	return render(request, 'users/bill_report.html', {})
