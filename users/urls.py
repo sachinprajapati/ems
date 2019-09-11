@@ -16,4 +16,6 @@ urlpatterns = [
     path('recharge-history/', RechargeHistory, name="recharge_history"),
     path('change-password/', auth_views.PasswordChangeView.as_view(template_name="users/change_password.html"), name="change_password"),
     path('recharge-list/', RechargeList, name="recharge_list"),
+    path('recharge-success/', RechargeSuccess, name="recharge_success"),
+    path("getFlat/", getFlat, name="getFlat"),
 ]

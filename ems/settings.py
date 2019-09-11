@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+import pyodbc
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -82,6 +83,14 @@ DATABASES = {
     }
 }
 
+conn = pyodbc.connect(
+    "Driver={SQL Server};"
+    #"Server=ABCD-PC\WINCCFLEXEXPRESS;"
+    "Server=SACHIN-PC;"
+    "Database=EMS;"
+    "Trusted_Connection=yes;"
+)
+
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -93,9 +102,9 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
     },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
+    # {
+    #     'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    # },
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
@@ -107,7 +116,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+#TIME_ZONE = 'UTC'
+
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 
@@ -132,5 +143,3 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 LOGIN_REDIRECT_URL = '/dashboard'
 
 LOGOUT_REDIRECT_URL = '/'
-
-#AUTH_USER_MODEL = 'users.User'
