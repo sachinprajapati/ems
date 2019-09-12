@@ -34,7 +34,6 @@ def Dashboard(request):
 def Recharge(request):
 	if request.method == "POST":
 		data = request.POST
-		print(data)
 		if data.get("id") and data.get("tower") and data.get("flat") and data.get("recharge-amt") \
 			and data.get("type"):
 			dt = convert_to_localtime(timezone.now())
@@ -50,13 +49,18 @@ def Recharge(request):
 				VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)"
 			cur.execute(sql, [recharge_no, dt, data["id"], bal.Amt_Left, data["recharge-amt"], data["type"] ,1, chq_dd, dt, "cashier", \
 				"R", bal.Utility_KWH, bal.DG_KWH])
-			try:
-				sql1 = "UPDATE [TblConsumption] set [amt_left]=? where flat_pkey=?"
-				cur.execute(sql1, [bal.Amt_Left+int(data['recharge-amt']), data["id"]])
-			except Exception as e:
-				print(e)
+			sql1 = "UPDATE [TblConsumption] set [amt_left]=? where flat_pkey=?"
+			total = bal.Amt_Left+int(data['recharge-amt'])
+			cur.execute(sql1, [total, data["id"]])
 			conn.commit()
-			return HttpResponse("hello")
+			context = {
+			"data": getFlatDetailByKey(data["id"]),
+			"bal": bal,
+			'recharge_amt' : data['recharge-amt'],
+			"total" : total
+			}
+			print(context)
+			return render(request, "users/recharge_success.html", context)
 		else:
 			return HttpResponse("fail")
 	return render(request, 'users/recharge.html', {})
@@ -84,6 +88,14 @@ def getBill(request):
 
 @login_required
 def RechargeHistory(request):
+	if request.method == "POST":
+		date = request.POST.get("date", "")
+		if date:
+			try:
+				date = datetime.strptime(date, "%Y-%m-%d").date()
+				getRechargeHistory(date)
+			except Exception as e:
+				print(e)
 	return render(request, 'users/rechargehistory.html', {})
 
 @login_required

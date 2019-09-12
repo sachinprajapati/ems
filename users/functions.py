@@ -12,6 +12,15 @@ def getFlatDetail(tower, flat):
 		a = flatt(*a)
 	return a
 
+def getFlatDetailByKey(flat_pkey):
+	flatt = namedtuple('Flat',['sno','flat_pkey','flat_no', 'tower_no', 'flat_size', 'owner', \
+	 'prof', 'status', 'mob', 'email', 'meter_no', 'flat_basis', 'fixed_amt', 'field_name', 'field_amt']) 
+	flat = cur.execute("select * from TblFlat where flat_pkey="+flat_pkey)
+	a = flat.fetchone()
+	if a:
+		a = flatt(*a)
+	return a
+
 
 def getBalanceReport(flat_pkey):
 	# Consumption = namedtuple('Consumption',['sno','date','flat_pkey', 'tower_no', 'flat_no', 'utility_kwh', \
@@ -31,3 +40,15 @@ def getCurrentsr():
 	a = cur.execute("select TOP 1 recharge_no from TblRecharge order by sno desc")
 	b = a.fetchone()
 	return int(b[0]+1)
+
+def getRechargeHistory(date):
+	Recharge = namedtuple("Recharge", ["SNo","Recharge_No","Recharge_Date","Flat_Pkey","Amount_Left", \
+		"Recharge_Amt","Rpt_TYPE","RPT_Chq_DD","Chq_DD_No","Chq_DD_Date","UsrName","Recharge_TYPE","Utility_KWH","DG_KWH"])
+	sql = "select * from [TblRecharge] where recharge_date between '{0}' and '{0} 23:59:59'".format(date.strftime("%Y/%m/%d"))
+	a = cur.execute(sql)
+	data = a.fetchall()
+	recharge = []
+	for i in data:
+		recharge.append(Recharge(*i))
+	print(recharge)
+	return recharge
