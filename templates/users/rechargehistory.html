@@ -1,11 +1,15 @@
 {% extends 'base.html' %}
+{% load getFlat %}
+{% load humanize %}
+
 
 {% block content %}
 <main class="login-form">
     <div class="cotainer">
         <div class="row justify-content-center">
-            <div class="col-md-8">
+            <div class="col-md-10">
                 <div class="card">
+            {% if not recharge %}
                     <div class="card-header text-center">Recharge History<i class="fas fa-cloud"></i></div>
                     <div class="card-body">
                         <form action="" method="post">
@@ -37,6 +41,42 @@
                             {% endif %}
                     </form>
                 </div>
+            {% else %}
+                <table class="table table-hover table-sm">
+                  <thead>
+                    <tr>
+                      <th scope="col">Date & Time</th>
+                      <th scope="col">Owner</th>
+                      <th scope="col">Tower</th>
+                      <th scope="col">Flat</th>
+                      <th scope="col">Recharge Type</th>
+                      <th scope="col">Recharge Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for r in recharge %}
+                        <tr>
+                          <th scope="row">{{ r.Recharge_Date }}</th>
+                          {% with flat=r.Flat_Pkey|getFlatDetail%}
+                              <td>{{ flat.owner }}</td>
+                              <td>{{ flat.tower_no|floatformat:0 }}</td>
+                              <td>{{ flat.flat_no|floatformat:0 }}</td>
+                          {% endwith %}
+                          <td>{{ r.Rpt_TYPE }}</td>
+                          <td>{{ r.Recharge_Amt|floatformat:0|intcomma }}</td>
+                        </tr>
+                    {% endfor %}
+                        <tr style="border-top: 2px solid #333;">
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td><strong>{{ total|floatformat:0|intcomma }}</strong></td>
+                        </tr>
+                  </tbody>
+                </table>
+            {% endif %}
             </div>
         </div>
     </div>

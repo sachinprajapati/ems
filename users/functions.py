@@ -48,7 +48,9 @@ def getRechargeHistory(date):
 	a = cur.execute(sql)
 	data = a.fetchall()
 	recharge = []
+	total = 0
 	for i in data:
-		recharge.append(Recharge(*i))
-	print(recharge)
-	return recharge
+		r = Recharge(*i)
+		recharge.append(r)
+		total += r.Recharge_Amt
+	return recharge, total

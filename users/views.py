@@ -88,15 +88,20 @@ def getBill(request):
 
 @login_required
 def RechargeHistory(request):
+	context = {}
 	if request.method == "POST":
 		date = request.POST.get("date", "")
 		if date:
 			try:
 				date = datetime.strptime(date, "%Y-%m-%d").date()
-				getRechargeHistory(date)
+				recharge, total = getRechargeHistory(date)
+				context = {
+				"recharge": recharge,
+				"total": total,
+				}
 			except Exception as e:
 				print(e)
-	return render(request, 'users/rechargehistory.html', {})
+	return render(request, 'users/rechargehistory.html', context)
 
 @login_required
 def RechargeList(request):
