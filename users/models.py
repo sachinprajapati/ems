@@ -8,3 +8,6 @@ class Type(models.Model):
 class UserType(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
 	Type = models.ForeignKey(Type, on_delete=models.CASCADE)
+
+class recharge(models.Model):
+	

@@ -83,6 +83,11 @@ def getFlat(request):
 
 @login_required
 def getBill(request):
+	if request.method == "POST":
+		data = request.POST
+		if data.get('id') and data.get('month'):
+			bill = getMonthlyBill(data['id'], data['month'])
+			print(bill)
 	return render(request, 'users/getBill.html', {})
 
 

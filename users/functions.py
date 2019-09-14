@@ -54,3 +54,7 @@ def getRechargeHistory(date):
 		recharge.append(r)
 		total += r.Recharge_Amt
 	return recharge, total
+
+
+def getMonthlyBill(flat_pkey, month):
+	Bill = namedtuple("Bill")

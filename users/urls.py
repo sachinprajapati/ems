@@ -12,7 +12,7 @@ urlpatterns = [
     path('dashboard/', Dashboard, name="dashboard"),
     path('recharge/', Recharge, name="recharge"),
     path('bill/', getBill, name="bill"),
-    path('bill-report/', genrateBill, name="bill"),
+    path('bill-report/', genrateBill, name="bill-format"),
     path('recharge-history/', RechargeHistory, name="recharge_history"),
     path('change-password/', auth_views.PasswordChangeView.as_view(template_name="users/change_password.html"), name="change_password"),
     path('recharge-list/', RechargeList, name="recharge_list"),
