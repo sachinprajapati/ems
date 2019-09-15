@@ -6,7 +6,8 @@ cur = conn.cursor()
 def getFlatDetail(tower, flat):
 	flatt = namedtuple('Flat',['sno','flat_pkey','flat_no', 'tower_no', 'flat_size', 'owner', \
 	 'prof', 'status', 'mob', 'email', 'meter_no', 'flat_basis', 'fixed_amt', 'field_name', 'field_amt']) 
-	flat = cur.execute("select * from TblFlat where Tower_No="+tower+" and Flat_No="+flat)
+	sql = "select * from TblFlat where Tower_No="+tower+" and Flat_No="+flat
+	flat = cur.execute(sql)
 	a = flat.fetchone()
 	if a:
 		a = flatt(*a)

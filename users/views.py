@@ -3,6 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.conf import settings
+from django.db import transaction
 
 from collections import OrderedDict
 from itertools import chain
@@ -10,6 +11,7 @@ from ems.settings import conn
 
 from .functions import *
 from .forms import *
+from .models import Recharge
 
 import time
 from datetime import datetime
@@ -32,38 +34,46 @@ def Dashboard(request):
 
 @login_required
 def Recharge(request):
+	context = {}
+	errors = []
 	if request.method == "POST":
 		data = request.POST
-		if data.get("id") and data.get("tower") and data.get("flat") and data.get("recharge-amt") \
-			and data.get("type"):
-			dt = convert_to_localtime(timezone.now())
+		try:
+			with transaction.atomic():
+				if data.get("id") and data.get("tower") and data.get("flat") and data.get("recharge-amt") \
+					and data.get("type"):
+					dt = convert_to_localtime(timezone.now())
 
-			if data["type"] == "Bank" and data.get("chq"):
-				chq_dd = data["chq"]
-			else:
-				chq_dd = None
-			bal = getBalanceReport(data["id"])
-			recharge_no = getCurrentsr()
-			sql = "INSERT INTO [TblRecharge] ([Recharge_No] ,[Recharge_Date] ,[Flat_Pkey] ,[Amount_Left] ,[Recharge_Amt] \
-				,[Rpt_TYPE] ,[RPT_Chq_DD] ,[Chq_DD_No] ,[Chq_DD_Date] ,[UsrName] ,[Recharge_TYPE] ,[Utility_KWH],[DG_KWH]) \
-				VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)"
-			cur.execute(sql, [recharge_no, dt, data["id"], bal.Amt_Left, data["recharge-amt"], data["type"] ,1, chq_dd, dt, "cashier", \
-				"R", bal.Utility_KWH, bal.DG_KWH])
-			sql1 = "UPDATE [TblConsumption] set [amt_left]=? where flat_pkey=?"
-			total = bal.Amt_Left+int(data['recharge-amt'])
-			cur.execute(sql1, [total, data["id"]])
-			conn.commit()
-			context = {
-			"data": getFlatDetailByKey(data["id"]),
-			"bal": bal,
-			'recharge_amt' : data['recharge-amt'],
-			"total" : total
-			}
-			print(context)
-			return render(request, "users/recharge_success.html", context)
-		else:
-			return HttpResponse("fail")
-	return render(request, 'users/recharge.html', {})
+					if data["type"] == "Bank" and data.get("chq"):
+						chq_dd = data["chq"]
+					else:
+						chq_dd = None
+					bal = getBalanceReport(data["id"])
+					recharge_no = getCurrentsr()
+					formdata = {"flat": data["id"], "amount": data["recharge-amt"]}
+					form = RechargeForm(formdata)
+					if form.is_valid():
+						form.save()
+					sql = "INSERT INTO [TblRecharge] ([Recharge_No] ,[Recharge_Date] ,[Flat_Pkey] ,[Amount_Left] ,[Recharge_Amt] \
+						,[Rpt_TYPE] ,[RPT_Chq_DD] ,[Chq_DD_No] ,[Chq_DD_Date] ,[UsrName] ,[Recharge_TYPE] ,[Utility_KWH],[DG_KWH]) \
+						VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)"
+					cur.execute(sql, [recharge_no, dt, data["id"], bal.Amt_Left, data["recharge-amt"], data["type"] ,1, chq_dd, dt, "cashier", \
+						"R", bal.Utility_KWH, bal.DG_KWH])
+					sql1 = "UPDATE [TblConsumption] set [amt_left]=? where flat_pkey=?"
+					total = bal.Amt_Left+int(data['recharge-amt'])
+					cur.execute(sql1, [total, data["id"]])
+					conn.commit()
+					context = {
+					"data": getFlatDetailByKey(data["id"]),
+					"bal": bal,
+					'recharge_amt' : data['recharge-amt'],
+					"total" : total
+					}
+					return render(request, "users/recharge_success.html", context)
+		except Exception as e:
+			errors.append(e)
+	context = {"errors" : errors}
+	return render(request, 'users/recharge.html', context)
 
 @login_required
 def getFlat(request):
