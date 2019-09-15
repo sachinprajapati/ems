@@ -24,7 +24,8 @@ cur = conn.cursor()
 def convert_to_localtime(utctime):
 	fmt = '%d/%m/%Y %H:%M'
 	utc = utctime.replace(tzinfo=pytz.UTC)
-	localtz = utc.astimezone(timezone.get_current_timezone())
+	localtz = pytz.timezone("Asia/Calcutta")
+	localtz = utc.astimezone(localtz)
 	return localtz
 
 @login_required()
@@ -32,7 +33,7 @@ def Dashboard(request):
 	return render(request, 'users/dashboard.html', {})
 
 
-@login_required
+@login_required()
 def Recharge(request):
 	context = {}
 	errors = []
@@ -50,6 +51,7 @@ def Recharge(request):
 						chq_dd = None
 					bal = getBalanceReport(data["id"])
 					recharge_no = getCurrentsr()
+					print(dt.strftime("%d/%m/%y %H:%M %p"))
 					formdata = {"flat": data["id"], "amount": data["recharge-amt"]}
 					form = RechargeForm(formdata)
 					if form.is_valid():
@@ -75,7 +77,7 @@ def Recharge(request):
 	context = {"errors" : errors}
 	return render(request, 'users/recharge.html', context)
 
-@login_required
+@login_required()
 def getFlat(request):
 	if request.method == "POST":
 		tower = request.POST.get("tower", '')
@@ -91,7 +93,7 @@ def getFlat(request):
 				return JsonResponse(a)
 	return HttpResponse(status=404)
 
-@login_required
+@login_required()
 def getBill(request):
 	if request.method == "POST":
 		data = request.POST
@@ -101,7 +103,7 @@ def getBill(request):
 	return render(request, 'users/getBill.html', {})
 
 
-@login_required
+@login_required()
 def RechargeHistory(request):
 	context = {}
 	if request.method == "POST":
@@ -118,14 +120,14 @@ def RechargeHistory(request):
 				print(e)
 	return render(request, 'users/rechargehistory.html', context)
 
-@login_required
+@login_required()
 def RechargeList(request):
 	return render(request, 'users/recharge_list.html', {})
 
-@login_required
+@login_required()
 def genrateBill(request):
 	return render(request, 'users/bill_report.html', {})
 
-@login_required
+@login_required()
 def RechargeSuccess(request):
 	return render(request, 'users/recharge_success.html', {})

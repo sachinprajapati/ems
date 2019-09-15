@@ -6,16 +6,16 @@
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
+    {% if request.user.is_authenticated %}
       <li class="nav-item">
         <a class="nav-link" href="{% url 'users:recharge' %}">Recharge</a>
       </li>
-      <li class="nav-item">
+      <!-- <li class="nav-item">
         <a class="nav-link" href="{% url 'users:bill' %}">Bill</a>
-      </li>
+      </li> -->
       <li class="nav-item">
         <a class="nav-link" href="{% url 'users:recharge_history' %}">Recharge History</a>
       </li>
-      {% if request.user.is_authenticated %}
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           {{ request.user }}
@@ -28,9 +28,6 @@
         </div>
       </li>
       {% endif %}
-      <li class="nav-item">
-        <a class="nav-link" href="#" tabindex="-1" aria-disabled="true">Contact Us</a>
-      </li>
     </ul>
     {% if request.user.is_authenticated %}
     <form class="form-inline my-2 my-lg-0">
