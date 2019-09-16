@@ -9,6 +9,15 @@
 {% endblock %}
 
 {% block content %}
+
+<script type="text/javascript">
+$(document).ready(function() {
+  // Restrict input to digits by using a regular expression filter.
+  $("#submit-form").click(function() {
+    location.reload();
+  });
+});
+</script>
 <script type="text/javascript">
 (function($) {
   $.fn.inputFilter = function(inputFilter) {
@@ -95,7 +104,7 @@ $(document).ready(function() {
                 <div class="card">
                     <div class="card-header text-center">Recharge ( OC Maintance )<i class="fas fa-cloud"></i></div>
                         <div class="card-body">
-                        <form action="" method="post">
+                        <form action="" method="post" target="_blank">
                             {% csrf_token %}
                             <div class="row">
                             <input type="hidden" name="id" id='flat_pkey'>
@@ -107,7 +116,7 @@ $(document).ready(function() {
                                 </div>
                                 <div class="col-4">
                                     <div class="form-group input-group-sm">
-                                        <label for="email_address" class="col-form-label">Flar Number</label>
+                                        <label for="email_address" class="col-form-label">Flat Number</label>
                                         <input type="number" id="flat" class="form-control number" name="flat" required autofocus>
                                     </div>
                                 </div>
@@ -171,7 +180,7 @@ $(document).ready(function() {
                                     </div>
                                 </div>
                                 <div class="col-12">
-                                    <button type="submit" class="btn btn-primary btn-block">Recharge</button>
+                                    <button type="submit" id="submit-form" class="btn btn-primary btn-block">Recharge</button>
                                 </div>
                             </div>
                     	</div>

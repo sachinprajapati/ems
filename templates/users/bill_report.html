@@ -1,4 +1,5 @@
 {% load static %}
+{% load getFlat %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -84,30 +85,34 @@
 				    <tr>
 				      <th scope="row">1</th>
 				      <td>EB</td>
-				      <td>4001</td>
-				      <td>4105</td>
-				      <td>105</td>
-				      <td>6.7</td>
-				      <td>3000</td>
+				      <td>{{ bill.Start_EB }}</td>
+				      <td>{{ bill.End_EB }}</td>
+				      {% with totaleb=bill.End_EB|subtract:bill.Start_EB|floatformat:2 %}
+					      <td>{{ totaleb }}</td>
+					      <td>{{ bill.Utility_Rate }}</td>
+					      <td>{{ totaleb|multiply:bill.Utility_Rate }}</td>
+				      {% endwith %}
 				    </tr>
 				    <tr>
 				      <th scope="row">2</th>
 				      <td>DG</td>
-				      <td>109</td>
-				      <td>110</td>
-				      <td>109</td>
-				      <td>1</td>
-				      <td>18</td>
+				      <td>{{ bill.Start_DG }}</td>
+				      <td>{{ bill.End_DG }}</td>
+				      {% with totaldg=bill.End_DG|subtract:bill.Start_DG|floatformat:2 %}
+						<td>{{ totaldg }}</td>
+						<td>{{ bill.DG_Rate }}</td>
+						<td>{{ totaldg|multiply:bill.DG_Rate }}</td>
+				      {% endwith %}
 				    </tr>
 				    <tr>
 				      <th scope="row">3</th>
 				      <td colspan="5">Maintance Charge</td>
-				      <td>0.0</td>
+				      <td>{{ mf.maintance|floatformat:2 }}</td>
 				    </tr>
 				    <tr>
 				      <th scope="row">4</th>
 				      <td colspan="5">Fixed Charges(*)</td>
-				      <td>3120.0</td>
+				      <td>{{ mf.fixed|floatformat:2 }}</td>
 				    </tr>
 				    <tr>
 				      <th scope="row">5</th>
@@ -119,6 +124,16 @@
 				<hr/>
 				<h6 class="text-center"><strong>(*) - These figures are inclusive of service tax as per the prevailing rates.</strong></h6>
 				<hr/>
+				<div class="row">
+					<div class="col-2">
+					</div>
+					<div class="col-9">
+						<h5><pre><strong class="float-right">Total Use		:	2000</strong></pre></h5>
+						<h5><pre><strong class="float-right">Opening Balance		:	2000</strong></pre></h5>
+						<h5><pre><strong class="float-right">Recharge in the Month	:	2000</strong></pre></h5>
+						<h5><pre><strong class="float-right">Adjustment(+/-)  :  1300	Curent Balance		:	2000</strong></pre></h5>
+					</div>
+				</div>
 				<hr/>
 				<div>
 					<p>E&OE. This is a computer generated report and any disputes regarding the same shall be registered within 7 days of generation.</p>

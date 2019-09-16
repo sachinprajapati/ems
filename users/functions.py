@@ -42,10 +42,9 @@ def getCurrentsr():
 	b = a.fetchone()
 	return int(b[0]+1)
 
-def getRechargeHistory(date):
+def getRechargeHistory(sql):
 	Recharge = namedtuple("Recharge", ["SNo","Recharge_No","Recharge_Date","Flat_Pkey","Amount_Left", \
 		"Recharge_Amt","Rpt_TYPE","RPT_Chq_DD","Chq_DD_No","Chq_DD_Date","UsrName","Recharge_TYPE","Utility_KWH","DG_KWH"])
-	sql = "select * from [TblRecharge] where recharge_date between '{0}' and '{0} 23:59:59'".format(date.strftime("%Y/%m/%d"))
 	a = cur.execute(sql)
 	data = a.fetchall()
 	recharge = []
@@ -57,5 +56,32 @@ def getRechargeHistory(date):
 	return recharge, total
 
 
+def getNegativeFlats():
+	NegativeFlats = namedtuple("NegativeFlats", ["tower_no", "flat_no", "owner", "mob", "amt_left"])
+	sql = "SELECT TblConsumption.tower_no, TblConsumption.flat_no, TblFlat.Owner, TblFlat.mobile_no, TblConsumption.amt_left \
+			FROM [TblConsumption] INNER JOIN TblFlat ON TblConsumption.flat_pkey = TblFlat.flat_pkey \
+			where TblConsumption.amt_left < 0 ORDER BY TblConsumption.tower_no, TblConsumption.flat_no;"
+	a = cur.execute(sql)
+	ls = []
+	if a:
+		for i in a:
+			ls.append(NegativeFlats(*i))
+	return ls
+
 def getMonthlyBill(flat_pkey, month):
-	Bill = namedtuple("Bill")
+	MonthlyBill = namedtuple("MonthlyBill", ["Bill_Pkey","Flat_Pkey","Month","Year","Start_EB","Start_DG", \
+		"End_EB","End_DG","Opening_Amt","Closing_Amt","Utility_Rate","DG_Rate","Inserted_Date","Updated_Date"])
+	sql = "SELECT * from [TblMonthlyBill] where flat_pkey={} and year={} and month={}".format(flat_pkey, month.year, month.month)
+	a = cur.execute(sql)
+	return MonthlyBill(*a.fetchone())
+
+
+def getMaintanceFixed(flat_pkey, month):
+	MaintanceFixed = namedtuple("MaintanceFixed", ["maintance", "fixed"])
+	sql = "SELECT sum(Maintenance_charges) as maintance, sum([Fixed_Amt]) as fixed from [TblMaintenance] \
+		where flat_pkey={} and month(Date) = {} and year(Date) = {}".format(flat_pkey, month.month, month.year)
+	print(sql)
+	a = cur.execute(sql)
+	if a:
+		return MaintanceFixed(*a.fetchone())
+	return MaintanceFixed((0,0))

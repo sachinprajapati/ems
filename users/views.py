@@ -95,23 +95,36 @@ def getFlat(request):
 
 @login_required()
 def getBill(request):
+	context = {}
 	if request.method == "POST":
 		data = request.POST
 		if data.get('id') and data.get('month'):
-			bill = getMonthlyBill(data['id'], data['month'])
-			print(bill)
-	return render(request, 'users/getBill.html', {})
+			date = datetime.strptime(data['month'], "%Y-%m").date()
+			print("month is ", date)
+			mf = getMaintanceFixed(data['id'], date)
+			print(mf)
+			bill = getMonthlyBill(data['id'], date)
+			context = {
+				"bill": bill,
+				"mf": mf,
+			}
+			return render(request, 'users/bill_report.html', context)
+	return render(request, 'users/getBill.html', context)
 
 
 @login_required()
-def RechargeHistory(request):
-	context = {}
+def DailyRechargeReport(request):
+	context = {
+		"args": {"type": "date", "name": "date"}
+	}
 	if request.method == "POST":
 		date = request.POST.get("date", "")
+		print("date is ", date)
 		if date:
 			try:
 				date = datetime.strptime(date, "%Y-%m-%d").date()
-				recharge, total = getRechargeHistory(date)
+				sql = "select * from [TblRecharge] where recharge_date between '{0}' and '{0} 23:59:59'".format(date.strftime("%Y/%m/%d"))
+				recharge, total = getRechargeHistory(sql)
 				context = {
 				"recharge": recharge,
 				"total": total,
@@ -119,6 +132,60 @@ def RechargeHistory(request):
 			except Exception as e:
 				print(e)
 	return render(request, 'users/rechargehistory.html', context)
+
+
+@login_required()
+def MonthlyRechargeReport(request):
+	context = {
+		"args": {"type": "month", "name": "month"}
+	}
+	if request.method == "POST":
+		date = request.POST.get("month", "")
+		print("month is ", date)
+		if date:
+			try:
+				date = datetime.strptime(date, "%Y-%m").date()
+				print(date)
+				sql = "SELECT * FROM TblRecharge WHERE MONTH(recharge_date) = {} AND YEAR(recharge_date) = {}".format(date.month, date.year)
+				print("sql is ",sql)
+				recharge, total = getRechargeHistory(sql)
+				context = {
+				"recharge": recharge,
+				"total": total,
+				}
+			except Exception as e:
+				print(e)
+	return render(request, 'users/rechargehistory.html', context)
+
+
+@login_required()
+def FlatRechargeReport(request):
+	context = {
+		"args": {"type": "month", "name": "month"},
+		"flatrecharge": True,
+	}
+	if request.method == "POST":
+		flat_pkey = request.POST.get("id", "")
+		print("flat_pkey is ", flat_pkey)
+		if flat_pkey:
+			try:
+				sql = "SELECT * FROM TblRecharge WHERE flat_pkey={}".format(flat_pkey)
+				print("sql is ",sql)
+				recharge, total = getRechargeHistory(sql)
+				context = {
+				"recharge": recharge,
+				"total": total,
+				}
+			except Exception as e:
+				print(e)
+	return render(request, 'users/rechargehistory.html', context)
+
+@login_required()
+def NegativeBalanceFlats(request):
+	context = {
+		"flats": getNegativeFlats,
+	}
+	return render(request, 'users/negative-flats.html', context)
 
 @login_required()
 def RechargeList(request):
