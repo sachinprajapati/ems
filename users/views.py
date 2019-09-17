@@ -107,6 +107,8 @@ def getBill(request):
 			context = {
 				"bill": bill,
 				"mf": mf,
+				"date": date,
+				"flat": getFlatDetailByKey(data["id"])
 			}
 			return render(request, 'users/bill_report.html', context)
 	return render(request, 'users/getBill.html', context)

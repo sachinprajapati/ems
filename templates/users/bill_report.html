@@ -56,17 +56,17 @@
 				<div class="row">
 					<div class="col-4">
 						<pre><h5>Report Date : 25/06/2019</h5></pre>
-						<pre><h5>Tower No    : 17</h5></pre>
-						<pre><h5>Name 	    : Sachin kumar</h5></pre>
+						<pre><h5>Tower No    : {{ flat.tower_no|floatformat:0 }}</h5></pre>
+						<pre><h5>Name 	    : {{ flat.owner }}</h5></pre>
 					</div>
 					<div class="col-4">
-						<pre><h5>Month/Year : February 2019</h5></pre>
-						<pre><h5>Flat No    : 109</h5></pre>
-						<pre><h5>Mobile No  : 7838388626 </h5></pre>
+						<pre><h5>Month/Year : {{ date.month }} {{ date.year }}</h5></pre>
+						<pre><h5>Flat No    : {{ flat.flat_no|floatformat:0 }}</h5></pre>
+						<pre><h5>Mobile No  : {{ flat.mob }} </h5></pre>
 					</div>
 					<div class="col-4">
-						<pre><h5>Meter No : 101</h5></pre>
-						<pre><h5>Email    : kuchbhi@gmail.com</h5></pre>
+						<pre><h5>Meter No : {{ flat.meter_no }}</h5></pre>
+						<pre><h5>Email    : {{ flat.email }}</h5></pre>
 					</div>
 				</div>
 				<table class="table table-hover table-sm">

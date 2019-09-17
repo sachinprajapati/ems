@@ -10,6 +10,14 @@
 
 {% block content %}
 <script type="text/javascript">
+    $(document).ready(function() {
+      // Restrict input to digits by using a regular expression filter.
+      $("#submit-form").click(function() {
+        location.reload();
+      });
+    });
+</script>
+<script type="text/javascript">
 (function($) {
   $.fn.inputFilter = function(inputFilter) {
     return this.on("input keydown keyup mousedown mouseup select contextmenu drop", function() {
@@ -79,7 +87,7 @@ $(document).ready(function(){
                 <div class="card">
                     <div class="card-header text-center">Recharge ( OC Maintance )<i class="fas fa-cloud"></i></div>
                         <div class="card-body">
-                        <form action="" method="post">
+                        <form action="" method="post" target="_blank">
                             {% csrf_token %}
                             <div class="row">
                             <input type="hidden" name="id" id='flat_pkey'>
@@ -138,7 +146,7 @@ $(document).ready(function(){
                                     </div>
                                 </div>
                                 <div class="col-12">
-                                    <button type="submit" class="btn btn-primary btn-block">Recharge</button>
+                                    <button type="submit" id="submit-form" class="btn btn-primary btn-block">Get Bill</button>
                                 </div>
                             </div>
                         </div>
