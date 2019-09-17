@@ -7,11 +7,16 @@ def getFlatDetail(tower, flat):
 	flatt = namedtuple('Flat',['sno','flat_pkey','flat_no', 'tower_no', 'flat_size', 'owner', \
 	 'prof', 'status', 'mob', 'email', 'meter_no', 'flat_basis', 'fixed_amt', 'field_name', 'field_amt']) 
 	sql = "select * from TblFlat where Tower_No="+tower+" and Flat_No="+flat
-	flat = cur.execute(sql)
-	a = flat.fetchone()
-	if a:
-		a = flatt(*a)
-	return a
+	print("sql is ", sql)
+	try:
+		flat = cur.execute(sql)
+	except Exception as e:
+		print(e)
+	else:
+		a = flat.fetchone()
+		if a:
+			a = flatt(*a)
+		return a
 
 def getFlatDetailByKey(flat_pkey):
 	flatt = namedtuple('Flat',['sno','flat_pkey','flat_no', 'tower_no', 'flat_size', 'owner', \
@@ -73,7 +78,14 @@ def getMonthlyBill(flat_pkey, month):
 		"End_EB","End_DG","Opening_Amt","Closing_Amt","Utility_Rate","DG_Rate","Inserted_Date","Updated_Date"])
 	sql = "SELECT * from [TblMonthlyBill] where flat_pkey={} and year={} and month={}".format(flat_pkey, month.year, month.month)
 	a = cur.execute(sql)
-	return MonthlyBill(*a.fetchone())
+	m = MonthlyBill(*a.fetchone())
+	if m:
+		consume = {}
+		consume['ebconsume'] = m.End_EB - m.Start_EB
+		consume['dgconsume'] = m.End_DG - m.Start_DG
+		consume['ebprice'] = consume['ebconsume'] * m.Utility_Rate
+		consume['dgprice'] = consume['dgconsume'] * m.DG_Rate
+	return m, consume
 
 
 def getMaintanceFixed(flat_pkey, month):
@@ -85,3 +97,15 @@ def getMaintanceFixed(flat_pkey, month):
 	if a:
 		return MaintanceFixed(*a.fetchone())
 	return MaintanceFixed((0,0))
+
+
+def rechargeInMonth(flat_pkey, date):
+	sql = "select sum(recharge_amt) from [TblRecharge] where flat_pkey={} and month(recharge_date)={} \
+	and year(recharge_date)={}".format(flat_pkey, date.month, date.year)
+	r = cur.execute(sql)
+	r = r.fetchone()
+	if not r:
+		r = 0
+	else:
+		r = r[0]
+	return r

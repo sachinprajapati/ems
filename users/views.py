@@ -103,12 +103,16 @@ def getBill(request):
 			print("month is ", date)
 			mf = getMaintanceFixed(data['id'], date)
 			print(mf)
-			bill = getMonthlyBill(data['id'], date)
+			bill, consume = getMonthlyBill(data['id'], date)
 			context = {
 				"bill": bill,
 				"mf": mf,
+				"consume": consume,
 				"date": date,
-				"flat": getFlatDetailByKey(data["id"])
+				"report_date": datetime.today(),
+				"total": mf.maintance+mf.fixed+consume['ebprice']+consume['dgprice'],
+				"flat": getFlatDetailByKey(data["id"]),
+				"recharge": rechargeInMonth(data["id"], date)
 			}
 			return render(request, 'users/bill_report.html', context)
 	return render(request, 'users/getBill.html', context)
