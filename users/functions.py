@@ -39,6 +39,7 @@ def getBalanceReport(flat_pkey):
 		"Deduction_YN","Negative_Utility_KWH","Negative_DG_KWH","Negative_Date"])
 	a = cur.execute("SELECT * FROM TblConsumption where flat_Pkey=?",[flat_pkey])
 	data = a.fetchone()
+	print("data is", data)
 	cons = Consumption(*data)
 	return cons
 
@@ -109,3 +110,17 @@ def rechargeInMonth(flat_pkey, date):
 	else:
 		r = r[0]
 	return r
+
+
+def flatHourlyReport(flat_pkey, date):
+	Readings = namedtuple("Readings", ["Record_Date","Flat_Pkey","Utility_KWH","DG_KWH","Ref_Utility_KWH","Ref_DG_KWH", \
+		"Amt_Left","Recharge_Amt","Utility_Rate","DG_Rate","Maintenance_Rate","Fixed_Amt","Field_Amt","Status"])
+	sql = "SELECT * FROM [TblReadings] where flat_pkey={} and record_date between '{}' and '{} 23:59:59' order by record_date".format(flat_pkey, date, date)
+	print(sql)
+	r = cur.execute(sql)
+	r = r.fetchall()
+	ls = []
+	if r:
+		for i in r:
+			ls.append(Readings(*i))
+	return ls

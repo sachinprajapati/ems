@@ -194,8 +194,19 @@ def NegativeBalanceFlats(request):
 	return render(request, 'users/negative-flats.html', context)
 
 @login_required()
-def RechargeList(request):
-	return render(request, 'users/recharge_list.html', {})
+def FlatHourlyReport(request):
+	context = {
+		"form" : True,
+	}
+	if request.method == "POST":
+		data = request.POST
+		if data.get("date") and data.get("id"):
+			readings = flatHourlyReport(data["id"], data["date"])
+			context = {
+				"readings" : readings,
+				"flat" : getFlatDetailByKey(data["id"]),
+			}
+	return render(request, 'users/flats-hourly-report.html', context)
 
 @login_required()
 def genrateBill(request):

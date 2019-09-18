@@ -16,9 +16,9 @@ urlpatterns = [
     path('daily-recharge-report/', DailyRechargeReport, name="daily_recharge_report"),
     path('mothly-recharge-report/', MonthlyRechargeReport, name="monthly_recharge_report"),
     path('flat-recharge-report/', FlatRechargeReport, name="flat_recharge_report"),
+    path('flat-hourly-report/', FlatHourlyReport, name="flat_hourly_report"),
     path('negative-balance-flats/', NegativeBalanceFlats, name="negative_balance_flats"),
     path('change-password/', auth_views.PasswordChangeView.as_view(template_name="users/change_password.html"), name="change_password"),
-    path('recharge-list/', RechargeList, name="recharge_list"),
     path('recharge-success/', RechargeSuccess, name="recharge_success"),
     path("getFlat/", getFlat, name="getFlat"),
 ]
